@@ -1,0 +1,36 @@
+---
+- name: maintain nisclient source directory for sles
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tags: ['cni', 'dnsd']
+
+  tasks:
+    - name: delete nisclient source directory
+      file: path=roles/config_nisclient/files state=absent
+
+- name: fetch files for nisclient
+  hosts: "{{ ref_hosts }}"
+  any_errors_fatal: true
+  gather_facts: yes
+  vars:
+    ref_hosts: test_ref_hosts_list
+
+  roles:
+    - { role: fetch_nisclient_needfiles_for_sles, tags: ['cni','fnn'] }
+
+- name: run common tasks
+  hosts: "{{ run_hosts }}"
+  gather_facts: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/common.yml"
+    - "os_special_vars/{{ ansible_distribution | lower }}.yml"
+
+  roles:
+    - { role: check_ansible_version_and_linux_distribution, tags: ['cni', 'cnt', 'mns'] }
+    - { role: passwordless_communication, tags: ['plc'], when: passwordless }
+    - { role: install_required_packages_and_open_related_services, tags: ['cni','cnt','mns'] }
+    - { role: config_nisclient, tags: ['cni'] }
+    - { role: config_ntpserver, tags: ['cnt'] }
+    - { role: mount_nfs_share, tags: ['mns'] }

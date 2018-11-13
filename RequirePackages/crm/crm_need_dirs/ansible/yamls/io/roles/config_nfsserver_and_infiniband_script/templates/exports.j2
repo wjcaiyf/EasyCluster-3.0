@@ -1,0 +1,14 @@
+{% for i in mount_info %}
+{{ i.dest }}    
+{%- for j in i.export_info %}
+{% if loop.first and loop.last %}
+    {{ j.nfs_client }}({{ j.export_option }})
+{% elif loop.first %}
+    {{ j.nfs_client }}({{ j.export_option }})
+{%- elif loop.last %}
+ {{ j.nfs_client }}({{ j.export_option }})
+{% else %}
+ {{ j.nfs_client }}({{ j.export_option }})
+{%- endif %}
+{% endfor %}
+{% endfor %}

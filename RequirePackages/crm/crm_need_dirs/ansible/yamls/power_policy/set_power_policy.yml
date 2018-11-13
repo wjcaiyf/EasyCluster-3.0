@@ -1,0 +1,8 @@
+---
+- hosts: "{{ run_hosts }}"
+  gather_facts: no
+  
+  tasks:
+    - name: set default power policy
+      shell: ipmitool -I {{ interface | quote }} -H {{ inventory_hostname | quote }} -U {{ user | quote }} -P {{ password | quote }} chassis policy always-off
+      delegate_to: localhost

@@ -1,0 +1,5 @@
+---
+- include: config_nisclient_for_redhat.yml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+- include: config_nisclient_for_sles.yml
+  when: ansible_distribution == "SLES"

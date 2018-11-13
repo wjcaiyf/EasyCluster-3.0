@@ -1,0 +1,14 @@
+---
+- name: install required packages
+  action:
+   module: "{{ pkg_mgr }}"
+   name: "{{ required_pkg_list }}"
+   state: present
+
+- name: start and enable releated services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items: "{{ srv_list }}"
+  ignore_errors: yes

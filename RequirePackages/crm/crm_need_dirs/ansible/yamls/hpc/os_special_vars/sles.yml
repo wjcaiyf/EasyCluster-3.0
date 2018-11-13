@@ -1,0 +1,15 @@
+---
+#===============================================
+# Normally, you do not need to change this file
+#===============================================
+pkg_mgr: zypper
+required_pkg_list:
+  - rpcbind
+  - ypbind
+  - ntp
+srv_list:
+  - rpcbind
+  - rpcbind.socket
+  - ypbind
+  - ntp
+  - ntpd

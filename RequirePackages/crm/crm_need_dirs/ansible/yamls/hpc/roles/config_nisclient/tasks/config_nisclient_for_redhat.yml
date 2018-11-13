@@ -1,0 +1,7 @@
+---
+- name: REDHAT - config nisclient
+  shell: authconfig --enablenis --nisdomain={{ nis_domainname }} --nisserver={{ nis_server }} --update
+
+- include: restart_ypbind_in_background.yml
+  vars:
+    linux_dist: 'REDHAT'

@@ -1,0 +1,17 @@
+---
+#===============================================
+# Normally, you do not need to change this file
+#===============================================
+pkg_mgr: yum
+required_pkg_list:
+  - nfs-utils
+  - rpcbind
+  - ypbind
+  - ntp
+  - authconfig
+srv_list:
+  - rpcbind
+  - rpcbind.socket
+  - ypbind
+  - ntp
+  - ntpd

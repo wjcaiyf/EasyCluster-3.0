@@ -1,0 +1,12 @@
+timeout 10
+default menu.c32
+
+menu title ############ PXE Boot Menu ############
+label 1
+  menu label ^1) Install #os_type#
+  kernel rhel/vmlinuz_#os_type#
+  append initrd=rhel/initrd.img_#os_type# ks=http://%address%/ks/rhel.cfg
+
+label 2
+  menu label ^2) Boot from local driver
+  localboot -2

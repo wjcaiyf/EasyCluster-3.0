@@ -1,0 +1,20 @@
+---
+- name: fail if ansible version < 2.4.1
+  fail: msg="ansible version must >= 2.4.1 "
+  when: hostvars.localhost.ansible_version.full | version_compare('2.4.1', '<')
+  run_once: yes
+
+- name: fail if found unsupported linux distritution
+  vars:
+    supported_linux_distribution: 
+      - 'CentOS7'
+      - 'CentOS6'
+      - 'RedHat7'
+      - 'RedHat6'
+      - 'SLES12'
+      - 'SLES11'
+  fail: 
+    msg: "{{ inventory_hostname }} is not supported linux distribution, Supported Distributions Are: {{ supported_linux_distribution }}"
+  when: > 
+        ansible_distribution + ansible_distribution_major_version 
+        not in supported_linux_distribution

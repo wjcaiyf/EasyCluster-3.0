@@ -1,0 +1,8 @@
+- name: modify opensmd script file
+  lineinfile:
+    path: /etc/init.d/opensmd
+    regexp: "^# Default-Start:"
+    line: "# Default-Start: 3 5" 
+    state: present
+  notify: restart opensmd and openibd
+  when: ib_official_drive 

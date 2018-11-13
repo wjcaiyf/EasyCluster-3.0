@@ -1,0 +1,16 @@
+---
+#===============================================
+# Normally, you do not need to change this file
+#===============================================
+pkg_mgr: yum
+required_pkg_list:
+  - parted
+  - rpcbind
+  - nfs-utils
+  - xfsprogs
+srv_list:
+  - rpcbind
+  - rpcbind.socket
+  - nfslock
+  - "{{ nfs_server_daemon }}"
+nfs_server_daemon: nfs

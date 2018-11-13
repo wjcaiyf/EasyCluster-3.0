@@ -1,0 +1,14 @@
+---
+#===============================================
+# Normally, you do not need to change this file
+#===============================================
+pkg_mgr: zypper
+required_pkg_list:
+  - parted
+  - rpcbind
+  - nfs-kernel-server
+srv_list:
+  - rpcbind
+  - rpcbind.socket
+  - "{{ nfs_server_daemon }}"
+nfs_server_daemon: nfsserver

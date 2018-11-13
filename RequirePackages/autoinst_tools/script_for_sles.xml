@@ -1,0 +1,72 @@
+  <scripts>
+    <chroot-scripts config:type="list">
+      <script>
+        <chrooted config:type="boolean">true</chrooted>
+        <debug config:type="boolean">true</debug>
+        <feedback config:type="boolean">false</feedback>
+        <filename>chrooted.sh</filename>
+        <interpreter>shell</interpreter>
+        <location><![CDATA[]]></location>
+        <notification></notification>
+        <source><![CDATA[
+echo "chrooted"
+echo "chrooted"
+echo "chrooted"
+echo "chrooted"
+echo "chrooted"
+]]></source>
+      </script>
+    </chroot-scripts>
+
+
+    <post-scripts config:type="list">
+      <script>
+        <debug config:type="boolean">true</debug>
+        <feedback config:type="boolean">false</feedback>
+        <filename>postnetwork.sh</filename>
+        <interpreter>shell</interpreter>
+        <location><![CDATA[]]></location>
+        <network_needed config:type="boolean">true</network_needed>
+        <notification></notification>
+        <source><![CDATA[
+echo "postnetwork"
+echo "postnetwork"
+echo "postnetwork"
+echo "postnetwork"
+echo "postnetwork"
+]]></source>
+      </script>
+      <script>
+        <debug config:type="boolean">true</debug>
+        <feedback config:type="boolean">false</feedback>
+        <filename>postnonetwork.sh</filename>
+        <interpreter>shell</interpreter>
+        <location><![CDATA[]]></location>
+        <network_needed config:type="boolean">false</network_needed>
+        <notification></notification>
+        <source><![CDATA[
+echo "postnonetwork"
+echo "postnonetwork"
+echo "postnonetwork"
+echo "postnonetwork"
+echo "postnonetwork"
+]]></source>
+      </script>
+    </post-scripts>
+
+
+    <init-scripts config:type="list">
+      <script>
+        <debug config:type="boolean">true</debug>
+        <filename>init.sh</filename>
+        <location><![CDATA[]]></location>
+        <source><![CDATA[
+echo "init"
+echo "init"
+echo "init"
+echo "init"
+echo "init"
+]]></source>
+      </script>
+    </init-scripts>
+  </scripts>

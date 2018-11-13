@@ -1,0 +1,69 @@
+---
+- block:
+    - name: SLES11 - copy ready files to /etc
+      copy: src={{ item.s }} dest=/etc/{{ item.d }}
+      with_items:
+        - { s: "sles11/defaultdomain", d: "defaultdomain" }
+        - { s: "sles11/group", d: "group" }
+        - { s: "sles11/nsswitch.conf", d: "nsswitch.conf" }
+        - { s: "sles11/passwd", d: "passwd" }
+        - { s: "sles11/shadow", d: "shadow" }
+        - { s: "sles11/yp.conf", d: "yp.conf" }
+  
+    - name: SLES11 - copy ready files to /etc/sysconfig/network
+      copy: src=sles11/config dest=/etc/sysconfig/network/config
+  
+    - name: SLES11 - copy ready files to /etc/init.d
+      copy: src={{ item.s }} dest=/etc/init.d/{{ item.d }}
+      with_items:
+        - { s: "sles11/.depend.start", d: ".depend.start" }
+        - { s: "sles11/.depend.stop", d: ".depend.stop" }
+  
+    - name: SLES11 - set permissions for .depend.start and .depend.stop
+      file:
+        path: /etc/init.d/{{ item }}
+        owner: root
+        group: root
+        mode: 0755
+      with_items:
+        - .depend.start
+        - .depend.stop
+  when: ansible_distribution_major_version == "11"
+
+- block:
+    - name: SLES12 - copy ready files to /etc
+      copy: src={{ item.s }} dest=/etc/{{ item.d }}
+      with_items:
+        - { s: "sles12/defaultdomain", d: "defaultdomain" }
+        - { s: "sles12/group", d: "group" }
+        - { s: "sles12/nsswitch.conf", d: "nsswitch.conf" }
+        - { s: "sles12/passwd", d: "passwd" }
+        - { s: "sles12/shadow", d: "shadow" }
+        - { s: "sles12/yp.conf", d: "yp.conf" }
+  
+    - name: SLES12 - copy ready files to /etc/sysconfig/network
+      copy: src=sles12/config dest=/etc/sysconfig/network/config
+  
+    - name: SLES12 - copy ready files to /etc/pam.d
+      copy: src={{ item.s }} dest=/etc/pam.d/{{ item.d }}
+      with_items:
+        - { s: "sles12/common-account-pc", d: "common-account-pc" }
+        - { s: "sles12/common-auth-pc", d: "common-auth-pc" }
+        - { s: "sles12/common-password-pc", d: "common-password-pc" }
+        - { s: "sles12/common-session-pc", d: "common-session-pc" }
+      ignore_errors: true
+  when: ansible_distribution_major_version == "12"
+
+- name: SLES - set permission for /etc/shadow
+  file: 
+    path: /etc/shadow
+    owner: root 
+    group: shadow 
+    mode: 0640
+
+- name: SLES - set nisdomainname
+  shell: nisdomainname {{ nis_domainname }}
+
+- include: restart_ypbind_in_background.yml
+  vars:
+    linux_dist: 'SLES'

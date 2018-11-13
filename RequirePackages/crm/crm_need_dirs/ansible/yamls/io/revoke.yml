@@ -1,0 +1,32 @@
+---
+- hosts: "{{ run_hosts }}"
+  gather_facts: no
+  any_errors_fatal: true
+  vars_files:
+    - "vars/common.yml"
+
+  tasks:
+    - name: empty all exports
+      lineinfile:
+        path: /etc/exports
+        regexp: '.*'
+        state: absent
+        backup: yes
+      register: result
+
+    - name: reexport
+      shell: exportfs -r
+      when: result is changed
+      ignore_errors: yes
+
+    - name: umount mount point
+      mount:
+        path: "{{ item.dest }}"
+        state: unmounted
+      with_items: "{{ mount_info }}"
+
+    - name: delete mount point in /etc/fstab
+      mount:
+        path: "{{ item.dest }}"
+        state: absent
+      with_items: "{{ mount_info }}"

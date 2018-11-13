@@ -1,0 +1,13 @@
+---
+- hosts: "{{ run_hosts }}"
+  gather_facts: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/common.yml"
+    - "os_special_vars/{{ ansible_distribution | lower }}.yml"
+  
+  roles:
+    - { role: check_ansible_version_and_linux_distribution, tags: ['mpfm','cnis'] }
+    - { role: install_required_packages_and_open_related_services, tags: ['mpfm','cnis'] }
+    - { role: make_partitions_format_and_mount, tags: ['mpfm'] }
+    - { role: config_nfsserver_and_infiniband_script, tags: ['cnis'] }

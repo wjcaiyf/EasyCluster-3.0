@@ -1,0 +1,15 @@
+---
+ansible_ssh_pass: 123456
+run_play_hosts: all
+zabbix_url: http://127.0.0.1/zabbix
+zabbix_user: Admin
+zabbix_passwd: zabbix
+
+ip_num: 1
+
+group_name_added:
+  - HPC
+
+
+# variables for delete
+delete_group: no

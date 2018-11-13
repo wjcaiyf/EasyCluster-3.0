@@ -1,0 +1,13 @@
+---
+- name: "{{ linux_dist}} - restart ypbind in background"
+  service: name=ypbind state=restarted
+  async: 1000
+  poll: 0
+  register: restart_ypbind_result
+
+- name: '{{ linux_dist }} - check on ypbind background task'
+  async_status: jid={{ restart_ypbind_result.ansible_job_id }}
+  register: job_result
+  until: job_result.finished
+  retries: 4
+  delay: 1

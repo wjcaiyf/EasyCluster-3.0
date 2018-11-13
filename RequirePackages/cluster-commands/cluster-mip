@@ -1,0 +1,27 @@
+#!/bin/bash
+
+passwdfile=/.passwd
+
+help () {
+    echo "Usage: $0 hostname/manip [ hostname/manip] ..."
+    exit 1
+}
+
+if [ $# -eq 0 ]; then
+    help
+fi
+
+if [ $# -eq 1 ]; then
+    if [ "$1" == "--help" -o "$1" == '-h' ]; then
+        help
+    fi
+fi
+
+for i in $*
+do
+    if nmap -p 5901 "$i" | grep -q "5901\/tcp *open *vnc-1"; then
+        vncviewer -passwd $passwdfile "$i":1 &> /dev/null & 
+    else
+        echo "Sorry, can't connect to $i currently, please try again lager."
+    fi
+done

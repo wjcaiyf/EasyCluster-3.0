@@ -1,0 +1,14 @@
+---
+- name: restart nfs server
+  service:
+    name: "{{ nfs_server_daemon }}"
+    state: restarted
+
+- name: restart opensmd and openibd
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - opensmd
+    - openibd

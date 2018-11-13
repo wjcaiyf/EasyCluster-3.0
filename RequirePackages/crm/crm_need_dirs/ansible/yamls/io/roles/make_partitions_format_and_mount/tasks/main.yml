@@ -1,0 +1,62 @@
+---
+- name: get device partitions info
+  parted: 
+    device: "{{ item.dev }}"
+    unit: MiB
+  with_items: "{{ devs }}"
+  register: prt_info 
+
+- name: delete all partitions for devices
+  parted:
+    device: "{{ item.0.disk.dev }}"
+    number: "{{ item.1.num }}"
+    state: absent
+  with_subelements:
+    - "{{ prt_info.results }}"
+    - partitions
+
+- name: create partitions for devices
+  parted:
+    device: "{{ item.0.dev }}"
+    label: gpt
+    part_start: "{{ item.1.start }}"
+    part_end: "{{ item.1.end }}"
+    number: "{{ item.1.n }}"
+    state: present
+  with_subelements:
+    - "{{ devs }}"
+    - prts   
+#============================================
+- name: format partition
+  filesystem:
+    fstype: "{{ file_system_type }}"
+    dev: "{{ item.src }}"
+    force: yes
+  with_items: "{{ mount_info }}"
+
+- block:
+    - name: partprobe
+      shell: partprobe {{ item.dev }}
+      with_items:
+        - "{{ devs }}"
+
+    - name: get device uuid
+      shell: ls -l /dev/disk/by-uuid |grep {{ item.src.split('/')[2] }} | awk '{ print $9}'
+      register: result
+      with_items:
+        - "{{ mount_info }}"
+
+    - include: inner.yml
+      with_items: "{{ mount_info }}"
+      loop_control:
+        loop_var: outer_item
+  when: mount_byuuid
+
+- name: mount device according to device name
+  mount:
+    src: "{{ item.src }}"
+    path: "{{ item.dest }}"
+    fstype: "{{ file_system_type }}"
+    state: mounted
+  with_items: "{{ mount_info }}"
+  when: not mount_byuuid

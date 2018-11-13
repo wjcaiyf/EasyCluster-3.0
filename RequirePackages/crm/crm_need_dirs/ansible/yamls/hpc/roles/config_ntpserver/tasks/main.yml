@@ -1,0 +1,9 @@
+---
+- name: config ntp server
+  template: src="{{ item }}" dest=/etc/ntp.conf
+  notify: restart ntp server
+  with_first_found:
+    - "ntp_{{ ansible_distribution | lower }}.conf.j2"
+    - "ntp_default.conf.j2"
+
+- meta: flush_handlers

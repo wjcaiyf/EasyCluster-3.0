@@ -1,0 +1,11 @@
+---
+ntp_server: 10.122.22.49
+
+nis_server: 10.122.22.49
+nis_domainname: hpc
+
+mount_info:
+  - src: io1-ib:/CAE
+    dest: /CAE
+  - src: io2-ib:/CAE2
+    dest: /CAE2

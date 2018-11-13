@@ -1,0 +1,114 @@
+basedir=/opt/sgishsc
+bindir=$basedir/bin
+imagedir=$basedir/images
+autoinst_tools_dir=$basedir/autoinst_tools
+
+cluster_configure_dir=/etc/crm
+rp=RequirePackages
+
+systemd_root_dir=/usr/lib/systemd/system
+
+# variables for dhcp
+dhcp_server_pname=dhcp
+dhcp_configure_file=/etc/dhcp/dhcpd.conf
+dhcp_systemd_name=dhcpd.service
+dhcp_systemd_file=${systemd_root_dir}/$dhcp_systemd_name
+
+# variables for bind
+bind_server_pname=bind
+bind_configure_file=/etc/named.conf
+bind_work_dir=/var/named
+bind_systemd_name=named.service
+bind_systemd_file=${systemd_root_dir}/$bind_systemd_name
+
+# variables for tftp
+tftp_server_pname="tftp-server xinetd"
+tftp_root_dir=/var/lib/tftpboot
+tftp_systemd_name=xinetd.service
+
+# variables for web
+web_server_pname=httpd
+web_root_dir=/var/www/html
+web_configure_file=/etc/httpd/conf/httpd.conf
+web_configure_dir=/etc/httpd/conf.d
+web_systemd_name=httpd.service
+
+# variables for ftp
+ftp_server_pname=vsftpd
+ftp_configure_file=/etc/vsftpd/vsftpd.conf
+ftp_systemd_name=vsftpd.service
+
+# variable for packager manager
+pm='yum -q -y install'
+
+# variables for mariadb
+mariadb_pname=mariadb-server
+mariadb_systemd_name=mariadb.service
+db_name=zabbix
+db_user=zabbix
+db_passwd=zabbix
+
+# variables for zabbix
+zabbix_server_configure_file=/etc/zabbix/zabbix_server.conf
+zabbix_server_php_configure_file=/etc/zabbix/web/
+zabbix_server_systemd_name=zabbix-server.service
+zabbix_reinstall_php_dir=/usr/share/zabbix/include/
+zabbix_reinstall_php_file=/usr/share/zabbix/include/menu.inc.php
+fping_file=/usr/sbin/fping
+
+# variables for ansible
+ansible_configure_file=/etc/ansible/ansible.cfg
+
+#-----------------------------------------------------------------
+#         helper functions
+#-----------------------------------------------------------------
+if ! which resize &>/dev/null; then
+    echo "Preparing the installation environment ..."
+    if ! yum -y install xterm &>/dev/null; then
+        echo -e '\033[31m[Error]: install "xterm" failed.\033[0m'
+        exit 1
+    fi
+fi
+
+COLUMNS=`python -c "import commands; print commands.getoutput('resize').split()[0].split('=')[1].strip(';')"`
+
+myecho () {
+    [ $1 -eq 0 ] && echo -e "$prefix_success""\033[32m success\033[0m"
+    [ $1 -eq 1 ] && echo -e "$prefix_failed""\033[31m failed\033[0m" && exit 1
+    [ $1 -eq 2 ] && echo -e "$prefix_done""\033[32m done\033[0m"
+}
+
+get_length () {
+    length_arg1=`expr length "$1"`
+    prefix_success=`python -c "print '#'*(($COLUMNS-8-$length_arg1))"`
+    prefix_failed=`python -c "print '#'*(($COLUMNS-7-$length_arg1))"`
+    prefix_done=`python -c "print '#'*(($COLUMNS-5-$length_arg1))"`
+    export prefix_success
+    export prefix_failed
+    export prefix_done
+}
+
+install_pkg () {
+    get_length "$1"
+    echo -n "$1"
+    if ! yum -y install $2 &> /dev/null; then
+	myecho 1
+    fi
+	myecho 0
+}
+
+start_and_enable_server () {
+    get_length "$1"
+    echo -n "$1"
+    systemctl --system daemon-reload
+    systemctl restart $2 &> /dev/null
+    [ $? -ne 0 ] && myecho 1
+    systemctl enable $2 &>/dev/null
+    [ $? -ne 0 ] && myecho 1 || myecho 0
+}
+
+echo_done () {
+    get_length "$1"
+    echo -n "$1"
+    myecho 2
+}

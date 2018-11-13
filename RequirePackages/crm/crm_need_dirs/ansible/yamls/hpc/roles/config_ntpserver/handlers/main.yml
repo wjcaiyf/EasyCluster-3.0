@@ -1,0 +1,7 @@
+---
+- name: restart ntp server
+  service: name="{{ item }}" state=restarted
+  with_items:
+    - ntp
+    - ntpd
+  ignore_errors: true

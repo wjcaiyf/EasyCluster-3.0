@@ -1,0 +1,21 @@
+---
+- name: install required packages
+  action:
+   module: "{{ pkg_mgr }}"
+   name: "{{ required_pkg_list }}"
+   state: present
+
+- name: enable releated services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items: "{{ srv_list }}"
+  ignore_errors: yes
+
+- name: start rpcbind service
+  service:
+    name: "{{ item }}"
+    state: started
+  with_items: "{{ srv_list }}"
+  when: item == 'rpcbind' or item == 'rpcbind.socket'
+  ignore_errors: yes

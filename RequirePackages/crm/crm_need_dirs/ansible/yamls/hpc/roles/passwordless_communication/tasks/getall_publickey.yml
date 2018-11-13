@@ -1,0 +1,35 @@
+---
+- set_fact:
+    curt_user: "{{ lookup('env', 'USER') }}"
+    curt_user_home: "{{ lookup('env', 'HOME') }}"
+  delegate_to: localhost
+  run_once: yes
+
+- name: "confirm {{ curt_user_home}}/.ssh directory exists"
+  file:
+    path: "{{ curt_user_home }}/.ssh" 
+    owner: "{{ curt_user }}"
+    group: "{{ curt_user }}"
+    mode: 0700
+    state: directory
+  delegate_to: localhost
+  run_once: yes
+
+- name: get public key
+  shell: ssh-keyscan {{ inventory_hostname }} >> {{ curt_user_home }}/.ssh/known_hosts
+  delegate_to: localhost
+
+- name: copy /root/.ssh directory
+  copy:
+    src=/root/.ssh
+    dest=/root/
+    directory_mode=0700
+    mode=0600
+
+- name: set correct permission for id_rsa.pub and known_hosts
+  file: 
+    path={{ item }}
+    mode=0644
+  with_items:
+    - /root/.ssh/id_rsa.pub
+    - /root/.ssh/known_hosts

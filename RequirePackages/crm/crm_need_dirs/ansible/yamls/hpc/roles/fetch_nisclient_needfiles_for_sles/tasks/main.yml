@@ -1,0 +1,39 @@
+---
+- name: fail if found distribution is not SLES
+  fail: msg="'ref_hosts' linux distribution must be SLES"
+  when: ansible_distribution != "SLES"
+
+- name: fetch need files for nis client for sles11
+  fetch: src={{ item }} dest=roles/config_nisclient/files/sles11/ flat=yes
+         fail_on_missing=yes
+  with_items:
+    - /etc/defaultdomain
+    - /etc/group
+    - /etc/nsswitch.conf
+    - /etc/passwd
+    - /etc/shadow
+    - /etc/sysconfig/network/config
+    - /etc/yp.conf
+    - /etc/init.d/.depend.start
+    - /etc/init.d/.depend.stop
+  changed_when: false
+  when: ansible_distribution_major_version == "11"
+
+- name: fetch need files for nis client for sles12
+  fetch: src={{ item }} dest=roles/config_nisclient/files/sles12/ flat=yes
+         fail_on_missing=yes
+  with_items:
+    - /etc/defaultdomain
+    - /etc/group
+    - /etc/nsswitch.conf
+    - /etc/pam.d/common-account-pc
+    - /etc/pam.d/common-auth-pc
+    - /etc/pam.d/common-password-pc
+    - /etc/pam.d/common-session-pc
+    - /etc/passwd
+    - /etc/shadow
+    - /etc/sysconfig/network/config
+    - /etc/yp.conf
+  changed_when: false
+  ignore_errors: true
+  when: ansible_distribution_major_version == "12"

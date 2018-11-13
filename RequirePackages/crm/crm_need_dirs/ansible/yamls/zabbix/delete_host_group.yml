@@ -1,0 +1,26 @@
+---
+- hosts: "{{ run_play_hosts }}"
+  gather_facts: no
+  vars_files:
+    - group_vars/all
+
+  tasks:
+    - name: Delete hosts
+      local_action:
+        module: zabbix_host
+        server_url: "{{ zabbix_url }}"
+        login_user: "{{ zabbix_user }}"
+        login_password: "{{ zabbix_passwd }}"
+        host_name: "{{ inventory_hostname }}"
+        state: absent
+
+    - name: Delete groups
+      local_action:
+        module: zabbix_group
+        server_url: "{{ zabbix_url }}"
+        login_user: "{{ zabbix_user }}"
+        login_password: "{{ zabbix_passwd }}"
+        host_groups: "{{ group_name_added }}"
+        state: absent
+      run_once: yes
+      when: delete_group

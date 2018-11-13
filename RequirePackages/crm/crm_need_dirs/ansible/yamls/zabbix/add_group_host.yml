@@ -1,0 +1,35 @@
+---
+- hosts: "{{ run_play_hosts }}"
+  gather_facts: yes
+  vars_files:
+    - group_vars/all
+
+  tasks:
+    - name: Create host groups
+      local_action:
+        module: zabbix_group
+        server_url: "{{ zabbix_url }}"
+        login_user: "{{ zabbix_user }}"
+        login_password: "{{ zabbix_passwd }}"
+        state: present
+        host_groups: "{{ group_name_added }}"
+      run_once: yes
+
+    - name: Create a new host or update an existing host's info
+      local_action:
+        module: zabbix_host
+        server_url: "{{ zabbix_url }}"
+        login_user: "{{ zabbix_user }}"
+        login_password: "{{ zabbix_passwd }}"
+        host_name: "{{ inventory_hostname }}"
+        host_groups: "{{ group_name_added }}" 
+        status: disabled
+        state: present
+        inventory_mode: automatic
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: "{{ ansible_all_ipv4_addresses[ (ip_num - 1) ] }}"
+            dns: ""
+            port: 10050
